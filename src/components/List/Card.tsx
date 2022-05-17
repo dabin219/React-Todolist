@@ -8,9 +8,10 @@ import styled from 'styled-components';
 
 interface Props {
   item: Todo;
+  api: () => void;
 }
 
-const Card = ({ item }: Props) => {
+const Card = ({ item, api }: Props) => {
   const { id, name, startTime, endTime, requestedTime } = item;
 
   const inProgress: boolean = startTime && !endTime ? true : false;
@@ -40,7 +41,7 @@ const Card = ({ item }: Props) => {
         body: JSON.stringify({
           endTime: moment().format('YYYY-MM-DD HH:mm:ss'),
         }),
-      }).then((res) => res.json());
+      }).then(() => api());
     } else if (!isCompleted) {
       fetch(`http://localhost:3004/works/${id}`, {
         method: 'PUT',
@@ -50,7 +51,7 @@ const Card = ({ item }: Props) => {
         body: JSON.stringify({
           startTime: moment().format('YYYY-MM-DD HH:mm:ss'),
         }),
-      }).then((res) => res.json());
+      }).then(() => api());
     }
   };
 
