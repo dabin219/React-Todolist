@@ -8,10 +8,10 @@ import styled from 'styled-components';
 
 interface Props {
   item: Todo;
-  api: () => void;
+  getApi: () => void;
 }
 
-const Card = ({ item, api }: Props) => {
+const Card = ({ item, getApi }: Props) => {
   const { id, name, startTime, endTime, requestedTime } = item;
 
   const inProgress: boolean = startTime && !endTime ? true : false;
@@ -30,28 +30,23 @@ const Card = ({ item, api }: Props) => {
     : moment().diff(startTime);
   const formattedElapsedTime = moment.utc(elapsedTime).format('HH:mm');
 
+  const putApi = async (time: { [key in string]: string }) => {
+    await fetch(`http://localhost:3004/works/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(time),
+    });
+    getApi();
+  };
+
   const buttonHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (inProgress) {
-      fetch(`http://localhost:3004/works/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          endTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        }),
-      }).then(() => api());
+      putApi({ endTime: moment().format('YYYY-MM-DD HH:mm:ss') });
     } else if (!isCompleted) {
-      fetch(`http://localhost:3004/works/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        }),
-      }).then(() => api());
+      putApi({ startTime: moment().format('YYYY-MM-DD HH:mm:ss') });
     }
   };
 
@@ -79,7 +74,7 @@ const Card = ({ item, api }: Props) => {
           </div>
         )}
         {(inProgress || isCompleted) && (
-          <span style={{ float: 'right' }}>
+          <span style={{ float: isCompleted ? 'right' : 'left' }}>
             <FontAwesomeIcon icon={faClock} />
             <ElapsedTime>{formattedElapsedTime}</ElapsedTime>
           </span>
@@ -174,7 +169,7 @@ const ElapsedTime = styled.span`
   margin-left: 3px;
   font-weight: 500;
   font-size: 14px;
-  line-height: 21px;
+  line-height: 29px;
 `;
 
 const Button = styled.button`
