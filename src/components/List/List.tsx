@@ -6,7 +6,7 @@ import styled from 'styled-components';
 const List = () => {
   const [list, setList] = useState<Todo[]>([]);
 
-  const api = async () => {
+  const getApi = async () => {
     const data = await fetch('http://localhost:3004/works', {
       method: 'GET',
     });
@@ -15,14 +15,14 @@ const List = () => {
   };
 
   useEffect(() => {
-    api();
+    getApi();
   }, []);
 
   return (
     <Container>
       {list.map((item) => {
         const { id } = item;
-        return <Card key={id} item={item} api={api} />;
+        return <Card key={id} item={item} getApi={getApi} />;
       })}
     </Container>
   );
