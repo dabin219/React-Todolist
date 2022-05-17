@@ -5,15 +5,16 @@ import styled from 'styled-components';
 
 const List = () => {
   const [list, setList] = useState<Todo[]>([]);
-  useEffect(() => {
-    const api = async () => {
-      const data = await fetch('http://localhost:3004/works', {
-        method: 'GET',
-      });
-      const jsonData = await data.json();
-      setList(jsonData);
-    };
 
+  const api = async () => {
+    const data = await fetch('http://localhost:3004/works', {
+      method: 'GET',
+    });
+    const jsonData = await data.json();
+    setList(jsonData);
+  };
+
+  useEffect(() => {
     api();
   }, []);
 
@@ -21,7 +22,7 @@ const List = () => {
     <Container>
       {list.map((item) => {
         const { id } = item;
-        return <Card key={id} item={item} />;
+        return <Card key={id} item={item} api={api} />;
       })}
     </Container>
   );
